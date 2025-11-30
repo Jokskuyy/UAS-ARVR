@@ -1,4 +1,4 @@
-# UAS-Vr
+# UAS-VR
 
 Unity VR Project untuk Ujian Akhir Semester
 
