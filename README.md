@@ -37,8 +37,8 @@ Berikut adalah detail perubahan dan penambahan fitur pada versi ini:
 - Menambahkan scene baru yang siap dimainkan (playable). Scene ini sudah terintegrasi dengan sistem kalkulasi item, pengurangan health, dan panel total skor akhir.
 
 **3. Script Interaksi Player (GerakanPlayer1.cs)**
-Menambahkan script GerakanPlayer1.cs untuk simulasi interaksi Grab (mengambil item).
-Catatan: Script ini hanya berfungsi sebagai debugger untuk memastikan logika UI berjalan (item hilang saat diambil -> skor bertambah). Pada implementasi final, script ini dapat digantikan dengan script XR Interaction yg sesungguhnya
+- Menambahkan script GerakanPlayer1.cs untuk simulasi interaksi Grab (mengambil item).
+- Catatan: Script ini hanya berfungsi sebagai debugger untuk memastikan logika UI berjalan (item hilang saat diambil -> skor bertambah). Pada implementasi final, script ini dapat digantikan dengan script XR Interaction yg sesungguhnya
 
 **4. Implementasi UI Manager (Scripts/UIManager/)**
 Menambahkan folder khusus untuk mengelola logika antarmuka:
