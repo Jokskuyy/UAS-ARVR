@@ -79,3 +79,6 @@ Unity/[Aa]ssets/[Ss]treamingAssets/aa/*
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Large unused Unity Asset Store packages
+Unity/[Aa]ssets/nappin/
