@@ -57,7 +57,7 @@ Menambahkan folder khusus untuk mengelola logika antarmuka:
 - URL Baru: https://jianjoyland-uas-arvr.hf.space/predict-score
 - UI Callback: Menambahkan logika untuk otomatis memanggil ScoreUIManager.TampilkanScoreAkhir() setelah menerima respon skor prediksi dari server Python.
 
-**⚙️ Cara Menjalankan Scene Scoring**
+**⚙️ Cara Menjalankan Scene**
 - Buka Scene InfoTotal+ScoreUILayer.unity.
 - Pastikan koneksi internet aktif (untuk mengirim data ke Backend Hugging Face).
 - Tekan Play.
