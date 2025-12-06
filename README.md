@@ -12,6 +12,7 @@ This project requires the following asset from Unity Asset Store:
   Download from: [Unity Asset Store](https://assetstore.unity.com/packages/3d/props/interior/house-interior-free-258782)
 
 **Installation:**
+
 1. Open the project in Unity Editor
 2. Download and import the "House Interior Free" asset from the Asset Store
 3. The asset should be imported to `Assets/nappin/` folder
@@ -59,6 +60,7 @@ This project uses Universal Render Pipeline (URP) with separate profiles for Mob
 - `fix/*` - Bug fix branches
 
 ## Requirements
+
 - Unity 2022.3 LTS or newer
 - Universal Render Pipeline (URP)
 - XR Plugin Management
