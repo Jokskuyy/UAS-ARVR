@@ -3,6 +3,7 @@ using UnityEngine;
 // Mengumpulkan data hasil permainan dan mengirim ke backend untuk scoring.
 public class GameManager : MonoBehaviour
 {
+<<<<<<< HEAD
     //Tambahan agar langsung bisa ambil dari ScoreUIManager
     public static GameManager Instance;
 
@@ -13,6 +14,8 @@ public class GameManager : MonoBehaviour
     }
 
 
+=======
+>>>>>>> 716a9cb2f7a85c9172926284f027285522941f5b
     [Header("Networking")]
     [SerializeField] private GameResultUploader resultUploader;
 
@@ -44,6 +47,7 @@ public class GameManager : MonoBehaviour
         grandmaFoundTime = Time.time;
     }
 
+<<<<<<< HEAD
     // // Panggil ini ketika game benar-benar selesai (menang / kalah)
     // public void OnGameEnd(float playerHp, float grandmaHp, int savedItems)
     // {
@@ -115,14 +119,41 @@ public class GameManager : MonoBehaviour
         Debug.Log($"[AUTO-FETCH] Final HP: {finalPlayerHealth}, Saved Items: {finalPriorityItems}");
 
         // --- 4. KIRIM KE UPLOADER ---
+=======
+    // Panggil ini ketika game benar-benar selesai (menang / kalah)
+    public void OnGameEnd(float playerHp, float grandmaHp, int savedItems)
+    {
+        if (gameEnded) return;
+
+        gameEnded = true;
+
+        gameEndTime = Time.time;
+        playerHealthEnd = Mathf.Clamp(playerHp, 0f, 100f);
+        grandmaHealthEnd = Mathf.Clamp(grandmaHp, 0f, 100f);
+        priorityItemsSaved = Mathf.Clamp(savedItems, 0, totalPriorityItems);
+
+        float timeFindGrandma = (grandmaFound ? grandmaFoundTime : gameEndTime) - floodStartTime;
+        float timeFinishGame = gameEndTime - floodStartTime;
+
+        Debug.Log($"[ScoreDebug] timeFindGrandma={timeFindGrandma}, timeFinishGame={timeFinishGame}, " +
+                  $"playerHP={playerHealthEnd}, grandmaHP={grandmaHealthEnd}, " +
+                  $"prioritySaved={priorityItemsSaved}/{totalPriorityItems}");
+
+>>>>>>> 716a9cb2f7a85c9172926284f027285522941f5b
         if (resultUploader != null)
         {
             StartCoroutine(resultUploader.SendGameResult(
                 timeFindGrandma,
                 timeFinishGame,
+<<<<<<< HEAD
                 finalPlayerHealth,   // Pakai variable lokal yg baru
                 finalGrandmaHealth,  // Pakai variable lokal (100)
                 finalPriorityItems,  // Pakai variable lokal hasil penjumlahan
+=======
+                playerHealthEnd,
+                grandmaHealthEnd,
+                priorityItemsSaved,
+>>>>>>> 716a9cb2f7a85c9172926284f027285522941f5b
                 totalPriorityItems
             ));
         }
