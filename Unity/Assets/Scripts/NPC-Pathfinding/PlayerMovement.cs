@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Kecepatan gerak
-    public float gravity = -9.81f; // Nilai gravitasi
+    public float moveSpeed = 5f; 
+    public float gravity = -9.81f; 
+    public float mouseSensitivity = 100f;
     
     private CharacterController controller; 
     private Vector3 velocity; 
@@ -15,11 +16,13 @@ public class PlayerMovement : MonoBehaviour
         {
             Debug.LogError("PlayerMovement membutuhkan komponen CharacterController!");
         }
+        
+        Cursor.lockState = CursorLockMode.Locked; 
     }
 
     void Update()
     {
-        // Debugging Input: Cek apakah input WASD diterima
+
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
         {
             Debug.Log("Input WASD Diterima!");
@@ -27,31 +30,27 @@ public class PlayerMovement : MonoBehaviour
 
         if (controller == null) return; 
 
-        // 1. Logika Gravity
+        
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+        transform.Rotate(Vector3.up * mouseX); 
+        
         if (controller.isGrounded && velocity.y < 0)
         {
             velocity.y = -2f; 
         }
 
-        // Hitung Input (W, A, S, D)
         float x = Input.GetAxis("Horizontal"); 
         float z = Input.GetAxis("Vertical"); 
         
-        // >>> PERBAIKAN INVERSI <<<
-        // Balikkan arah input
+       
         x = -x; 
         z = -z; 
-        // >>> END PERBAIKAN <<<
-        
-        // Hitung Arah Gerak Relatif terhadap rotasi Player
+    
         Vector3 move = transform.right * x + transform.forward * z;
-        
-        // Gerakkan Player
+    
         controller.Move(move * moveSpeed * Time.deltaTime);
 
-        // Terapkan Gravitasi 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
-
     }
 }
