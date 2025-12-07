@@ -79,6 +79,7 @@ public class GameManager : MonoBehaviour
     //         Debug.LogWarning("[ScoreDebug] ResultUploader is not assigned on GameManager.");
     //     }
     // }
+
     //Diupdate agar otomatis ambil dari UI
     public void OnGameEnd()
     {
@@ -86,42 +87,48 @@ public class GameManager : MonoBehaviour
         gameEnded = true;
         gameEndTime = Time.time;
 
-        // 1. GAME MANAGER OTOMATIS AMBIL DATA DARI UI
-        float finalHP = 100f;
-        int totalSaved = 0;
+        float finalPlayerHealth = 100f;
+        float finalGrandmaHealth = 100f; // Default 100 (Karena belum ada sistem damage nenek)
+        int finalPriorityItems = 0;
 
+        // --- 2. AMBIL DATA DARI UI MANAGER ---
         if (ScoreUIManager.Instance != null)
         {
-            // Ambil Darah Terakhir
-            finalHP = ScoreUIManager.Instance.CurrentHealth;
+            // Ambil Darah Player
+            finalPlayerHealth = ScoreUIManager.Instance.CurrentHealth;
             
-            // LOGIKA GABUNGAN: Dokumen + Berlian dijumlah disini
-            totalSaved = ScoreUIManager.Instance.CountDokumen + ScoreUIManager.Instance.CountBarangPenting;
+            // Ambil Jumlah Barang (Dokumen + Barang Penting)
+            finalPriorityItems = ScoreUIManager.Instance.CountDokumen + ScoreUIManager.Instance.CountBarangPenting;
             
-            // Stop Timer di UI
+            // Stop Timer Visual
             ScoreUIManager.Instance.StopTimer();
         }
 
-        // 2. HITUNG WAKTU & RAPIKAN DATA
-        finalHP = Mathf.Clamp(finalHP, 0f, 100f);
-        totalSaved = Mathf.Clamp(totalSaved, 0, totalPriorityItems);
+        // --- 3. RAPIKAN DATA (CLAMP) ---
+        finalPlayerHealth = Mathf.Clamp(finalPlayerHealth, 0f, 100f);
+        finalPriorityItems = Mathf.Clamp(finalPriorityItems, 0, totalPriorityItems);
 
+        // Hitung Waktu
         float timeFindGrandma = (grandmaFound ? grandmaFoundTime : gameEndTime) - floodStartTime;
         float timeFinishGame = gameEndTime - floodStartTime;
 
-        Debug.Log($"[AUTO-FETCH] HP: {finalHP}, Items: {totalSaved} (Doc+BarangPenting)");
+        Debug.Log($"[AUTO-FETCH] Final HP: {finalPlayerHealth}, Saved Items: {finalPriorityItems}");
 
-        // 3. KIRIM KE UPLOADER 
+        // --- 4. KIRIM KE UPLOADER ---
         if (resultUploader != null)
         {
             StartCoroutine(resultUploader.SendGameResult(
                 timeFindGrandma,
                 timeFinishGame,
-                finalHP,
-                100f, // Health Nenek (Default 100)
-                totalSaved,
+                finalPlayerHealth,   // Pakai variable lokal yg baru
+                finalGrandmaHealth,  // Pakai variable lokal (100)
+                finalPriorityItems,  // Pakai variable lokal hasil penjumlahan
                 totalPriorityItems
             ));
+        }
+        else
+        {
+            Debug.LogWarning("[ScoreDebug] ResultUploader is not assigned on GameManager.");
         }
     }
 }
