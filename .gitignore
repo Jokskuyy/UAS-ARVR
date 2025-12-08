@@ -79,3 +79,14 @@ Unity/[Aa]ssets/[Ss]treamingAssets/aa/*
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Large unused Unity Asset Store packages
+Unity/[Aa]ssets/nappin/
+
+# Python virtual environment and ML artifacts
+Backend/venv/
+Backend/__pycache__/
+Backend/*.pyc
+Backend/.pytest_cache/
+Backend/model.pkl
+Backend/*.pkl
