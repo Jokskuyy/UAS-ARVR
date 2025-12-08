@@ -1,2 +1,21 @@
 fileFormatVersion: 2
 guid: 9630fc5cc7e492f48b0fe0cc65ad4056
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - livingRoomPrefab: {fileID: 8565640162122698903, guid: 1fffe7623f12d0f45a3af059bf52df12, type: 3}
+  - kitchenLeftPrefab: {fileID: 7953880576068018341, guid: e2a27dba21fdb44469ce41b62b4f54fe, type: 3}
+  - kitchenTopPrefab: {fileID: 7953880576068018341, guid: e2a27dba21fdb44469ce41b62b4f54fe, type: 3}
+  - kitchenRightPrefab: {fileID: 7953880576068018341, guid: e2a27dba21fdb44469ce41b62b4f54fe, type: 3}
+  - bedroomLeftPrefab: {fileID: 1401807225882363321, guid: 51af6335d3c985c42a2792f62749243c, type: 3}
+  - bedroomTopPrefab: {fileID: 1401807225882363321, guid: 51af6335d3c985c42a2792f62749243c, type: 3}
+  - bedroomRightPrefab: {fileID: 1401807225882363321, guid: 51af6335d3c985c42a2792f62749243c, type: 3}
+  - bathroomLeftPrefab: {fileID: 3126559932853416292, guid: c7739da75f5cc3149a411a87fae26396, type: 3}
+  - bathroomTopPrefab: {fileID: 3126559932853416292, guid: c7739da75f5cc3149a411a87fae26396, type: 3}
+  - bathroomRightPrefab: {fileID: 3126559932853416292, guid: c7739da75f5cc3149a411a87fae26396, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
