@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 public class GameResultUploader : MonoBehaviour
 {
     [Header("Backend Settings")]
-    [SerializeField] private string backendUrl = "http://localhost:5000/predict-score";
+    [SerializeField] private string backendUrl = "https://jianjoyland-uas-arvr.hf.space/predict-score";
 
     // Panggil coroutine ini ketika game selesai
     public IEnumerator SendGameResult(
@@ -59,6 +59,12 @@ public class GameResultUploader : MonoBehaviour
 
             ScoreResponse response = JsonUtility.FromJson<ScoreResponse>(responseText);
             Debug.Log($"[ScoreDebug] Score from backend = {response.score}");
+
+            // --- TAMBAH 4 BARIS INI UNTUK MUNCULKAN PANEL ---
+            if (ScoreUIManager.Instance != null)
+            {
+                ScoreUIManager.Instance.TampilkanScoreAkhir(response.score);
+            }
         }
     }
 

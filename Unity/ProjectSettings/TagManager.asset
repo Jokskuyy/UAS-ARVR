@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Bathroom
+  - player
   layers:
   - Default
   - TransparentFX
