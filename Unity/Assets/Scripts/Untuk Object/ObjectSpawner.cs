@@ -23,7 +23,7 @@ public class ObjectSpawner : MonoBehaviour
 
     [Header("Search Root")]
     [Tooltip("Root that contains all generated rooms (usually the GameObject with LayoutGenerator). If empty, uses this.transform.")]
-    public Transform searchRoot;
+    public Transform layoutGenerator;
 
     private readonly List<Transform> availableSpawnPoints = new List<Transform>();
 
@@ -41,7 +41,7 @@ public class ObjectSpawner : MonoBehaviour
     {
         availableSpawnPoints.Clear();
 
-        Transform root = searchRoot != null ? searchRoot : transform;
+        Transform root = layoutGenerator != null ? layoutGenerator : transform;
         Transform[] allChildren = root.GetComponentsInChildren<Transform>(true);
 
         foreach (Transform t in allChildren)

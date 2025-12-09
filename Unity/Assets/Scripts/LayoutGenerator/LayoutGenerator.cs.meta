@@ -14,7 +14,7 @@ MonoImporter:
   - bathroomLeftPrefab: {fileID: 3126559932853416292, guid: c7739da75f5cc3149a411a87fae26396, type: 3}
   - bathroomTopPrefab: {fileID: 3126559932853416292, guid: c7739da75f5cc3149a411a87fae26396, type: 3}
   - bathroomRightPrefab: {fileID: 3126559932853416292, guid: c7739da75f5cc3149a411a87fae26396, type: 3}
-  executionOrder: -100
+  executionOrder: 0
   icon: {instanceID: 0}
   userData: 
   assetBundleName: 
