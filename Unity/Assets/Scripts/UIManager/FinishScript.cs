@@ -6,18 +6,30 @@ public class FinishScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (hasTriggered) return;
-
-        if (other.CompareTag("player"))
+        if (other.CompareTag("Finish"))
         {
-            hasTriggered = true;
-            Debug.Log("Masuk Finish Line!");
+            TriggerFinish();
+        }
+    }
 
-            if (GameManager.Instance != null)
-            {
-                // Cuma panggil ini, gak perlu ngirim angka apa-apa
-                GameManager.Instance.OnGameEnd(); 
-            }
+    public void TriggerFinish()
+    {
+        if (hasTriggered) 
+        {
+            Debug.LogWarning("Finish sudah di-trigger sebelumnya!");
+            return;
+        }
+
+        hasTriggered = true;
+        Debug.Log("Masuk Finish Line!");
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnGameEnd(); 
+        }
+        else
+        {
+            Debug.LogWarning("GameManager.Instance tidak ditemukan!");
         }
     }
 }

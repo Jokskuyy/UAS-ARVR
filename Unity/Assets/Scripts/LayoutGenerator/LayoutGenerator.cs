@@ -146,9 +146,11 @@ public class LayoutGenerator : MonoBehaviour
             return;
         }
 
+        // Spawn living room di posisi GameObject ini
+        Vector3 centerPos = transform.position;
         GameObject livingGO = Instantiate(
             livingRoomPrefab,
-            Vector3.zero,
+            centerPos,
             livingRoomPrefab.transform.rotation,
             transform
         );
