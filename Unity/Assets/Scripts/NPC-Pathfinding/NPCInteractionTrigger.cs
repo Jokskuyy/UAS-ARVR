@@ -3,51 +3,56 @@ using UnityEngine;
 public class NPCInteractionTrigger : MonoBehaviour
 {
     private NPCRoamingController roamingController;
-    
-    private Transform playerTransform = null; 
+    private Transform playerTransform = null;
+    private bool playerInRange = false;
 
     void Start()
     {
         roamingController = GetComponent<NPCRoamingController>();
+        if (roamingController == null)
+        {
+            Debug.LogError("Script NPCRoamingController tidak ditemukan di objek ini!");
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            // SIMPAN Transform (other.transform)
-            playerTransform = other.transform; 
-            Debug.Log("Player masuk jangkauan. Tombol Gendong siap!");
+            playerTransform = other.transform;
+            playerInRange = true;
+            Debug.Log("Tekan 'E' untuk Ajak Ikut / Suruh Tunggu.");
         }
     }
 
-    // Dipanggil saat objek lain keluar dari trigger
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            if (!roamingController.isBeingCarried)
+            playerInRange = false;
+            // Jika sedang tidak follow, kita lupakan playernya
+            if (!roamingController.isFollowing)
             {
-                playerTransform = null; 
-                Debug.Log("Player keluar jangkauan.");
+                playerTransform = null;
             }
         }
     }
 
     void Update()
     {
-        // Cek Input Tombol 'E'
+        // Deteksi tombol E
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (roamingController.isBeingCarried)
+            // KASUS 1: Sedang Mengikuti -> Suruh Berhenti
+            if (roamingController.isFollowing)
             {
-                roamingController.StopCarrying();
-                
+                roamingController.StopFollowing();
                 playerTransform = null;
             }
-            else if (playerTransform != null) 
+            // KASUS 2: Belum Mengikuti & Player Dekat -> Suruh Ikut
+            else if (playerInRange && playerTransform != null)
             {
-                roamingController.StartCarrying(playerTransform);
+                roamingController.StartFollowing(playerTransform);
             }
         }
     }

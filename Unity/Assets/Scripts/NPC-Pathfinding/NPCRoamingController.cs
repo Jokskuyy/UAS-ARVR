@@ -1,26 +1,39 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic; 
+using System.Collections.Generic;
 
 public class NPCRoamingController : MonoBehaviour
 {
-  
     private NavMeshAgent agent;
+    private Animator anim; // Variabel untuk mengontrol animasi
 
+    [Header("Patrol Settings")]
     public List<Transform> waypoints;
-
-    private int currentWaypointIndex = 0;
-    public float patrolTime = 5f; 
+    public float patrolTime = 5f;
     private float timer;
+    private int currentWaypointIndex = 0;
 
-    public bool isBeingCarried = false; 
+    [Header("Follow Settings")]
+    public bool isFollowing = false;
+    public float followDistance = 2.0f; // Jarak berdirinya di belakang player
+    private Transform playerTarget;
 
     void Start()
     {
-    
         agent = GetComponent<NavMeshAgent>();
 
-        // Pastikan NPC mulai bergerak
+        // Mencari komponen Animator di object ini
+        anim = GetComponent<Animator>();
+
+        // PENGAMAN: Jika tidak ketemu di body utama, cari di anak-anak object (modelnya)
+        if (anim == null)
+        {
+            anim = GetComponentInChildren<Animator>();
+        }
+
+        // Setting jarak berhenti agar tidak terlalu nempel
+        agent.stoppingDistance = 0.5f;
+
         if (waypoints.Count > 0)
         {
             SetNextDestination();
@@ -29,28 +42,55 @@ public class NPCRoamingController : MonoBehaviour
 
     void Update()
     {
-        if (!isBeingCarried)
-        {
-            if (!agent.pathPending && agent.remainingDistance < 0.5f)
-            {
-                timer += Time.deltaTime;
+        // 1. UPDATE ANIMASI (PENTING!)
+        UpdateAnimation();
 
-                if (timer >= patrolTime)
-                {
-                    SetNextDestination();
-                    timer = 0f;
-                }
+        // 2. LOGIKA FOLLOW (MENGIKUTI)
+        if (isFollowing && playerTarget != null)
+        {
+            // Rumus: Cari posisi di BELAKANG punggung player
+            Vector3 targetPosition = playerTarget.position - (playerTarget.forward * followDistance);
+            agent.destination = targetPosition;
+            return; // Jangan jalankan logika patroli di bawah
+        }
+
+        // 3. LOGIKA PATROLI (JALAN SENDIRI)
+        if (!agent.pathPending && agent.remainingDistance < 0.5f)
+        {
+            timer += Time.deltaTime;
+
+            if (timer >= patrolTime)
+            {
+                SetNextDestination();
+                timer = 0f;
             }
         }
-        else
+    }
+
+    // Fungsi khusus kirim sinyal ke Animator
+    void UpdateAnimation()
+    {
+        if (anim != null)
         {
-            agent.isStopped = true;
+            // Mengambil kecepatan asli dari NavMeshAgent (0 = diam, >0 = jalan)
+            float currentSpeed = agent.velocity.magnitude;
+
+            // Kirim angka ini ke Parameter 'Speed' yang ada di Animator
+            // 0.1f adalah waktu transisi agar animasi haluss
+            anim.SetFloat("Speed", currentSpeed, 0.1f, Time.deltaTime);
         }
     }
 
     private void SetNextDestination()
     {
         if (waypoints.Count == 0) return;
+
+        // Pengaman jika waypoint cuma 1
+        if (waypoints.Count == 1)
+        {
+            agent.destination = waypoints[0].position;
+            return;
+        }
 
         int newIndex = currentWaypointIndex;
         while (newIndex == currentWaypointIndex)
@@ -62,26 +102,30 @@ public class NPCRoamingController : MonoBehaviour
         agent.destination = waypoints[currentWaypointIndex].position;
         agent.isStopped = false;
     }
-    
-    public void StartCarrying(Transform playerTransform)
+
+    public void StartFollowing(Transform player)
     {
-        isBeingCarried = true;
-        
-        agent.isStopped = true;
-        transform.SetParent(playerTransform); 
+        isFollowing = true;
+        playerTarget = player;
+
+        agent.enabled = true;
+        agent.isStopped = false;
+
+        // Percepat sedikit saat mengejar player (opsional)
+        agent.speed = 4.5f;
+
+        Debug.Log("Nenek mulai mengikuti...");
     }
-public void StopCarrying()
-{
-  
-    isBeingCarried = false;
 
-    transform.SetParent(null); 
+    public void StopFollowing()
+    {
+        isFollowing = false;
+        playerTarget = null;
 
-    agent.isStopped = false; 
-    
-    agent.velocity = Vector3.zero; 
-    agent.isStopped = true; 
-    
-    Debug.Log("Nenek berhasil diturunkan.");
-}
+        // Kembalikan kecepatan jalan santai
+        agent.speed = 3.5f;
+
+        SetNextDestination();
+        Debug.Log("Nenek berhenti mengikuti.");
+    }
 }
