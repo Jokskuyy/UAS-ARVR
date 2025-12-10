@@ -55,10 +55,11 @@ public class GameResultUploader : MonoBehaviour
             string responseText = www.downloadHandler.text;
             Debug.Log($"[ScoreDebug] Response JSON: {responseText}");
 
+            //menampung response score 
             ScoreResponse response = JsonUtility.FromJson<ScoreResponse>(responseText);
             Debug.Log($"[ScoreDebug] Score from backend = {response.score}");
 
-            // --- TAMBAH 4 BARIS INI UNTUK MUNCULKAN PANEL ---
+            // Menampilkan Score Akhir ke Panel Game Over
             if (ScoreUIManager.Instance != null)
             {
                 ScoreUIManager.Instance.TampilkanScoreAkhir(response.score);
