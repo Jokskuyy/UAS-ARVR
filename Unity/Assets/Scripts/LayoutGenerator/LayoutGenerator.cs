@@ -45,7 +45,6 @@ public class LayoutGenerator : MonoBehaviour
     private RoomOption[] bedroomOptions;
     private RoomOption[] bathroomOptions;
 
-    // Menyimpan slot yang sudah dipakai supaya tidak dobel
     private readonly HashSet<RoomSlot> usedSlots = new HashSet<RoomSlot>();
 
     private void Start()
@@ -147,9 +146,11 @@ public class LayoutGenerator : MonoBehaviour
             return;
         }
 
+        // Spawn living room di posisi GameObject ini
+        Vector3 centerPos = transform.position;
         GameObject livingGO = Instantiate(
             livingRoomPrefab,
-            Vector3.zero,
+            centerPos,
             livingRoomPrefab.transform.rotation,
             transform
         );
@@ -182,13 +183,34 @@ public class LayoutGenerator : MonoBehaviour
 
         Vector3 worldPos = livingPos + choice.offsetFromLiving;
 
+        // Rotasi berdasarkan slot (bisa kamu sesuaikan sendiri)
+        Quaternion rotation = GetRotationForSlot(choice.slot, choice.prefab);
+
         Instantiate(
             choice.prefab,
             worldPos,
-            choice.prefab.transform.rotation,
+            rotation,
             transform
         );
 
         usedSlots.Add(choice.slot);
+    }
+
+    // Menentukan rotasi prefab berdasarkan slot.
+    // Kalau mau tetap pakai rotasi prefab, tinggal return choice.prefab.transform.rotation;
+    private Quaternion GetRotationForSlot(RoomSlot slot, GameObject prefab)
+    {
+        // contoh: atur sesuai kebutuhan arah pintu / dinding
+        switch (slot)
+        {
+            case RoomSlot.Left:
+                return Quaternion.Euler(0f, -90f, 0f);
+            case RoomSlot.Top:
+                return Quaternion.Euler(0f, 0f, 0f);
+            case RoomSlot.Right:
+                return Quaternion.Euler(0f, 90f, 0f);
+            default:
+                return prefab.transform.rotation;
+        }
     }
 }

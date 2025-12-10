@@ -82,6 +82,7 @@ Unity/[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Large unused Unity Asset Store packages
 Unity/[Aa]ssets/nappin/
+Unity/[Aa]ssets/RPG_FPS_game_assets_industrial/
 
 # Python virtual environment and ML artifacts
 Backend/venv/

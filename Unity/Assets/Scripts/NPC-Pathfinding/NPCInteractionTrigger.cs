@@ -1,59 +1,63 @@
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
+// Gunakan namespace ini untuk XR Toolkit terbaru (Unity 6 / XR Toolkit 3.x)
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
+[RequireComponent(typeof(XRSimpleInteractable))]
 public class NPCInteractionTrigger : MonoBehaviour
 {
     private NPCRoamingController roamingController;
-    private Transform playerTransform = null;
-    private bool playerInRange = false;
+    private XRSimpleInteractable interactable;
 
     void Start()
     {
+        // 1. Cari Script Controller di object yang sama
         roamingController = GetComponent<NPCRoamingController>();
         if (roamingController == null)
         {
-            Debug.LogError("Script NPCRoamingController tidak ditemukan di objek ini!");
+            Debug.LogError("ERROR: Script 'NPCRoamingController' tidak ditemukan di object ini!");
         }
+
+        // 2. Setup Event VR
+        interactable = GetComponent<XRSimpleInteractable>();
+
+        // Mendaftarkan fungsi OnVRInteract agar dipanggil saat 'Select' (Grip/Trigger) ditekan
+        interactable.selectEntered.AddListener(OnVRInteract);
     }
 
-    private void OnTriggerEnter(Collider other)
+    // Fungsi ini otomatis dipanggil oleh XR Toolkit
+    private void OnVRInteract(SelectEnterEventArgs args)
     {
-        if (other.CompareTag("Player"))
-        {
-            playerTransform = other.transform;
-            playerInRange = true;
-            Debug.Log("Tekan 'E' untuk Ajak Ikut / Suruh Tunggu.");
-        }
-    }
+        if (roamingController == null) return;
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
+        Debug.Log("Input VR Diterima!");
+
+        // LOGIKA SWITCH (Toggle)
+        if (roamingController.isFollowing)
         {
-            playerInRange = false;
-            // Jika sedang tidak follow, kita lupakan playernya
-            if (!roamingController.isFollowing)
+            // Jika sedang ikut -> Suruh Berhenti
+            roamingController.StopFollowing();
+        }
+        else
+        {
+            // Jika sedang diam -> Cari Kamera Player -> Suruh Ikut
+            if (Camera.main != null)
             {
-                playerTransform = null;
+                roamingController.StartFollowing(Camera.main.transform);
+            }
+            else
+            {
+                Debug.LogError("Main Camera tidak ditemukan! Pastikan XR Origin punya kamera dengan tag 'MainCamera'.");
             }
         }
     }
 
-    void Update()
+    // Bersih-bersih event saat object hancur
+    private void OnDestroy()
     {
-        // Deteksi tombol E
-        if (Input.GetKeyDown(KeyCode.E))
+        if (interactable != null)
         {
-            // KASUS 1: Sedang Mengikuti -> Suruh Berhenti
-            if (roamingController.isFollowing)
-            {
-                roamingController.StopFollowing();
-                playerTransform = null;
-            }
-            // KASUS 2: Belum Mengikuti & Player Dekat -> Suruh Ikut
-            else if (playerInRange && playerTransform != null)
-            {
-                roamingController.StartFollowing(playerTransform);
-            }
+            interactable.selectEntered.RemoveListener(OnVRInteract);
         }
     }
 }

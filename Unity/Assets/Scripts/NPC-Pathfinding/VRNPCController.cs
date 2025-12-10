@@ -1,99 +1,145 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
-// Wajib ada untuk VR XR Toolkit
-using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit; 
+// Jika Anda pakai XR Toolkit versi terbaru (3.x), biarkan baris di atas. 
+// Jika error "Interactables not found", hapus ".Interactables" di bawah.
 
-public class VRNPCController : MonoBehaviour
+[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable))] 
+public class VRNPCManager : MonoBehaviour
 {
-    [Header("Setup Komponen")]
+    [Header("Komponen Utama")]
     private NavMeshAgent agent;
     private Animator anim;
-    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable interactable; // Komponen interaksi VR
+    // Referensi ke komponen interaksi VR
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable interactableVR;
 
     [Header("Patroli Settings")]
     public List<Transform> waypoints;
-    private int currentWaypointIndex = 0;
     public float patrolTime = 5f;
     private float timer;
+    private int currentWaypointIndex = 0;
 
     [Header("Follow Settings")]
     public bool isFollowing = false;
-    public Transform playerTarget; // Nanti diisi otomatis dengan Kepala (Camera) Player
-
-    [Tooltip("Jarak NPC berdiri di belakang pemain")]
     public float followDistance = 2.0f;
+    private Transform headTarget; // Target kepala (HMD) pemain
 
     void Start()
     {
-        // 1. Ambil Komponen NavMesh & Animator
+        // 1. Setup Komponen Otomatis
         agent = GetComponent<NavMeshAgent>();
-        anim = GetComponentInChildren<Animator>();
+        anim = GetComponent<Animator>();
+        interactableVR = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
 
-        // 2. Setup Interaksi VR
-        interactable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRSimpleInteractable>();
-        if (interactable == null)
-        {
-            Debug.LogError("LUPA PASANG! Tambahkan component 'XR Simple Interactable' di NPC ini.");
-        }
-        else
-        {
-            // Mendaftarkan fungsi OnSelectEntered agar terpanggil saat trigger ditekan
-            interactable.selectEntered.AddListener(OnSelectEntered);
-        }
+        // PENGAMAN: Cari animator di anak jika di parent kosong
+        if (anim == null) anim = GetComponentInChildren<Animator>();
 
-        // 3. Setup Agent
+        // 2. Setup Agent
         agent.stoppingDistance = 0.5f;
 
-        // Mulai Patroli
+        // 3. Setup Interaksi VR (Otomatis Subscribe Event)
+        if (interactableVR != null)
+        {
+            // Saat NPC "Ditekan/Di-Select" oleh tangan VR, panggil fungsi Interaksi
+            interactableVR.selectEntered.AddListener(OnVRInteract);
+        }
+
+        // 4. Mulai Patroli
         if (waypoints.Count > 0) SetNextDestination();
     }
 
-    // Fungsi ini terpanggil otomatis oleh XR Toolkit saat tangan VR menekan tombol Select (Grip/Trigger)
-    private void OnSelectEntered(SelectEnterEventArgs args)
+    void Update()
     {
-        // Toggle Logika (Kalau ikut -> berhenti, Kalau diam -> ikut)
+        // Update Animasi Jalan/Diam setiap frame
+        UpdateAnimation();
+
+        // --- LOGIKA FOLLOW (MENGIKUTI) ---
+        if (isFollowing && headTarget != null)
+        {
+            MoveToBehindPlayer();
+            return; // Stop, jangan jalankan patroli kalau lagi ikut
+        }
+
+        // --- LOGIKA PATROLI (JALAN SENDIRI) ---
+        PatrolBehavior();
+    }
+
+    // --- KUMPULAN FUNGSI (MODULAR) ---
+
+    // 1. Fungsi Utama Interaksi (Dipanggil saat Trigger ditekan)
+    public void OnVRInteract(SelectEnterEventArgs args)
+    {
+        Debug.Log("VR Interaksi Terdeteksi!");
+        
+        // Logika Toggle: Kalau lagi ikut -> Suruh Berhenti. Kalau diam -> Suruh Ikut.
         if (isFollowing)
         {
             StopFollowing();
         }
         else
         {
-            // Kita cari object "Main Camera" (Kepala Player) sebagai target
-            if (Camera.main != null)
-            {
-                StartFollowing(Camera.main.transform);
-            }
-            else
-            {
-                Debug.LogError("Main Camera tidak ditemukan! Pastikan XR Origin punya kamera dengan tag MainCamera");
-            }
+            StartFollowing();
         }
     }
 
-    void Update()
+    // 2. Fungsi Mulai Mengikuti
+    public void StartFollowing()
     {
-        UpdateAnimation();
-
-        // --- LOGIKA FOLLOW VR ---
-        if (isFollowing && playerTarget != null)
+        // Cari Kepala Player (Main Camera) secara otomatis
+        if (Camera.main != null)
         {
-            // PENTING UNTUK VR:
-            // Kita ambil arah hadap kepala player (Forward), TAPI kita hilangkan sumbu Y-nya.
-            // Supaya kalau player mendongak ke langit, NPC tidak mencoba terbang/masuk tanah.
+            headTarget = Camera.main.transform;
+            isFollowing = true;
+            
+            agent.enabled = true;
+            agent.isStopped = false;
+            agent.speed = 4.5f; // Lari kecil saat mengejar
 
-            Vector3 playerLookDir = playerTarget.forward;
-            playerLookDir.y = 0; // Ratakan ke tanah
-            playerLookDir.Normalize();
-
-            // Hitung posisi di belakang punggung
-            Vector3 targetPosition = playerTarget.position - (playerLookDir * followDistance);
-
-            agent.destination = targetPosition;
-            return;
+            Debug.Log("Status: NPC Mengikuti Player.");
         }
+        else
+        {
+            Debug.LogError("ERROR: Main Camera tidak ditemukan! Pastikan XR Origin punya kamera dengan Tag 'MainCamera'.");
+        }
+    }
 
-        // --- LOGIKA PATROLI ---
+    // 3. Fungsi Berhenti Mengikuti
+    public void StopFollowing()
+    {
+        isFollowing = false;
+        headTarget = null;
+        
+        agent.speed = 3.5f; // Jalan santai
+        
+        // Langsung cari waypoint terdekat untuk lanjut patroli
+        SetNextDestination();
+        
+        Debug.Log("Status: NPC Kembali Patroli.");
+    }
+
+    // 4. Logika Pergerakan di Belakang Player (Khusus VR)
+    private void MoveToBehindPlayer()
+    {
+        // Ambil arah pandang player
+        Vector3 playerLookDir = headTarget.forward;
+        
+        // PENTING UNTUK VR: Matikan sumbu Y (atas/bawah). 
+        // Agar kalau player nunduk/dongak, NPC tidak mencoba masuk tanah/terbang.
+        playerLookDir.y = 0; 
+        playerLookDir.Normalize();
+
+        // Hitung posisi di belakang punggung
+        Vector3 targetPos = headTarget.position - (playerLookDir * followDistance);
+        
+        agent.destination = targetPos;
+    }
+
+    // 5. Logika Patroli
+    private void PatrolBehavior()
+    {
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
         {
             timer += Time.deltaTime;
@@ -105,15 +151,7 @@ public class VRNPCController : MonoBehaviour
         }
     }
 
-    void UpdateAnimation()
-    {
-        if (anim != null)
-        {
-            float currentSpeed = agent.velocity.magnitude;
-            anim.SetFloat("Speed", currentSpeed, 0.1f, Time.deltaTime);
-        }
-    }
-
+    // 6. Logika Ganti Tujuan Patroli
     private void SetNextDestination()
     {
         if (waypoints.Count == 0) return;
@@ -130,30 +168,22 @@ public class VRNPCController : MonoBehaviour
         agent.isStopped = false;
     }
 
-    public void StartFollowing(Transform target)
+    // 7. Update Animasi ke Animator
+    private void UpdateAnimation()
     {
-        isFollowing = true;
-        playerTarget = target;
-        agent.enabled = true;
-        agent.speed = 4.5f; // Lebih cepat saat ngikut
-        Debug.Log("VR: Nenek mulai mengikuti player.");
+        if (anim != null)
+        {
+            float speed = agent.velocity.magnitude;
+            anim.SetFloat("Speed", speed, 0.1f, Time.deltaTime);
+        }
     }
 
-    public void StopFollowing()
-    {
-        isFollowing = false;
-        playerTarget = null;
-        agent.speed = 3.5f; // Santai lagi
-        SetNextDestination();
-        Debug.Log("VR: Nenek berhenti mengikuti.");
-    }
-
-    // Membersihkan event listener saat object hancur/pindah scene
+    // Membersihkan Event saat script mati (Biar tidak error memory leak)
     private void OnDestroy()
     {
-        if (interactable != null)
+        if (interactableVR != null)
         {
-            interactable.selectEntered.RemoveListener(OnSelectEntered);
+            interactableVR.selectEntered.RemoveListener(OnVRInteract);
         }
     }
 }
