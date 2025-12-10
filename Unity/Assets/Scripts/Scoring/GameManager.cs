@@ -44,38 +44,6 @@ public class GameManager : MonoBehaviour
     }
 
     // // Panggil ini ketika game benar-benar selesai (menang / kalah)
-    // public void OnGameEnd(float playerHp, float grandmaHp, int savedItems)
-    // {
-    //     if (gameEnded) return;
-
-    //     gameEnded = true;
-
-    //     gameEndTime = Time.time;
-    //     playerHealthEnd = Mathf.Clamp(playerHp, 0f, 100f);
-    //     priorityItemsSaved = Mathf.Clamp(savedItems, 0, totalPriorityItems);
-
-    //     float timeFindGrandma = (grandmaFound ? grandmaFoundTime : gameEndTime) - floodStartTime;
-    //     float timeFinishGame = gameEndTime - floodStartTime;
-
-    //     Debug.Log($"[ScoreDebug] timeFindGrandma={timeFindGrandma}, timeFinishGame={timeFinishGame}, " +
-    //               $"playerHP={playerHealthEnd}, grandmaHP={grandmaHealthEnd}, " +
-    //               $"prioritySaved={priorityItemsSaved}/{totalPriorityItems}");
-
-    //     if (resultUploader != null)
-    //     {
-    //         StartCoroutine(resultUploader.SendGameResult(
-    //             timeFindGrandma,
-    //             timeFinishGame,
-    //             playerHealthEnd,
-    //             priorityItemsSaved,
-    //             totalPriorityItems
-    //         ));
-    //     }
-    //     else
-    //     {
-    //         Debug.LogWarning("[ScoreDebug] ResultUploader is not assigned on GameManager.");
-    //     }
-    // }
     //Diupdate agar otomatis ambil dari UI
     public void OnGameEnd()
     {
