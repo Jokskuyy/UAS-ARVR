@@ -26,14 +26,14 @@ public class PlayerHealthTest : MonoBehaviour
         int listrikAktif = HazardItem.ActiveElectricHazards;
         int racunAktif = HazardItem.ActiveToxicHazards;
 
-        bool isHurt = false;
+        // bool isHurt = false;
 
         // 2. LOGIKA KENA DAMAGE
         if (listrikAktif > 0)
         {
             float damage = electricDamage * listrikAktif * Time.deltaTime;
             currentHealth -= damage;
-            isHurt = true;
+            // isHurt = true;
             // Debug.Log untuk melihat efeknya
             Debug.Log($"<color=yellow>[KESETRUM]</color> Ada {listrikAktif} sumber listrik! HP: {(int)currentHealth}");
         }
@@ -42,7 +42,7 @@ public class PlayerHealthTest : MonoBehaviour
         {
             float damage = toxicDamage * racunAktif * Time.deltaTime;
             currentHealth -= damage;
-            isHurt = true;
+            // isHurt = true;
             Debug.Log($"<color=green>[KERACUNAN]</color> Ada {racunAktif} sumber racun! HP: {(int)currentHealth}");
         }
 

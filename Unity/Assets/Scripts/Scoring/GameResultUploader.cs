@@ -14,7 +14,6 @@ public class GameResultUploader : MonoBehaviour
         float timeFindGrandma,
         float timeFinishGame,
         float playerHealthEnd,
-        float grandmaHealthEnd,
         int priorityItemsSaved,
         int totalPriorityItems)
     {
@@ -23,7 +22,6 @@ public class GameResultUploader : MonoBehaviour
             time_find_grandma = timeFindGrandma,
             time_finish_game = timeFinishGame,
             player_health_end = playerHealthEnd,
-            grandma_health_end = grandmaHealthEnd,
             priority_items_saved = priorityItemsSaved,
             total_priority_items = totalPriorityItems
         };
@@ -74,7 +72,6 @@ public class GameResultUploader : MonoBehaviour
         public float time_find_grandma;
         public float time_finish_game;
         public float player_health_end;
-        public float grandma_health_end;
         public int priority_items_saved;
         public int total_priority_items;
     }

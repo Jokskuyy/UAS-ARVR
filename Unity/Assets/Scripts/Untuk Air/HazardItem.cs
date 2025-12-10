@@ -13,6 +13,10 @@ public class HazardItem : MonoBehaviour
     [Tooltip("Centang jika ingin melihat log saat benda ini kena air.")]
     public bool showDebugLogs = true;
 
+    [Header("Damage Settings")]
+    [Tooltip("Damage yang diberikan ke player per detik saat item ini terendam.")]
+    public float damagePerSecond = 5f;
+
     // --- GLOBAL STATE (API untuk Tim NPC & Player) ---
     // Statis: Nilai dibagi ke seluruh game.
     public static int ActiveElectricHazards = 0;
@@ -20,6 +24,22 @@ public class HazardItem : MonoBehaviour
     // -------------------------------------------------
 
     private bool _isSubmerged = false;
+    private PlayerHealth playerHealth;
+
+    private void Start()
+    {
+        // Cari PlayerHealth component
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            playerHealth = player.GetComponent<PlayerHealth>();
+        }
+
+        if (playerHealth == null)
+        {
+            Debug.LogWarning("HazardItem: PlayerHealth tidak ditemukan! Pastikan Player memiliki tag 'Player'.");
+        }
+    }
 
     private void Update()
     {
@@ -34,6 +54,12 @@ public class HazardItem : MonoBehaviour
             {
                 _isSubmerged = true;
                 UpdateGlobalHazardState(true); // Lapor bahaya AKTIF
+            }
+
+            // Berikan damage ke player jika item terendam
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(damagePerSecond * Time.deltaTime);
             }
         }
         else

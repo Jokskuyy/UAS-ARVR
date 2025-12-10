@@ -11,7 +11,6 @@ public class TestSendScore : MonoBehaviour
             timeFindGrandma: 80f,
             timeFinishGame: 240f,
             playerHealthEnd: 85f,
-            grandmaHealthEnd: 90f,
             priorityItemsSaved: 3,
             totalPriorityItems: 4
         ));

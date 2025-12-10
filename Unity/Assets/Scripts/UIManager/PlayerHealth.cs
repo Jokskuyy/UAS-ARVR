@@ -7,10 +7,6 @@ public class PlayerHealth : MonoBehaviour
     private float currentHealth;
     private bool isDead = false; // Penanda biar gak mati berkali-kali
 
-    [Header("Setting Kerusakan")]
-    public float electricDamage = 5f; // Damage per detik per sumber listrik
-    public float toxicDamage = 2f;    // Damage per detik per sumber racun
-
     private void Start()
     {
         currentHealth = maxHealth;
@@ -19,34 +15,6 @@ public class PlayerHealth : MonoBehaviour
         if (ScoreUIManager.Instance != null) 
         {
             ScoreUIManager.Instance.UpdateHealth(currentHealth);
-        }
-    }
-
-    private void Update()
-    {
-        // Kalau sudah mati, jangan hitung damage lagi
-        if (isDead) return;
-
-        int listrikAktif = HazardItem.ActiveElectricHazards;
-        int racunAktif = HazardItem.ActiveToxicHazards;
-
-        float totalDamage = 0f;
-
-        // 2. HITUNG DAMAGE
-        if (listrikAktif > 0)
-        {
-            totalDamage += electricDamage * listrikAktif * Time.deltaTime;
-        }
-
-        if (racunAktif > 0)
-        {
-            totalDamage += toxicDamage * racunAktif * Time.deltaTime;
-        }
-
-        // 3. TERAPKAN KE DARAH
-        if (totalDamage > 0)
-        {
-            TakeDamage(totalDamage);
         }
     }
 

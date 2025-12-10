@@ -25,7 +25,6 @@ public class GameManager : MonoBehaviour
 
     private int priorityItemsSaved;
     private float playerHealthEnd;
-    private float grandmaHealthEnd;
 
     private bool grandmaFound;
     private bool gameEnded;
@@ -53,7 +52,6 @@ public class GameManager : MonoBehaviour
 
     //     gameEndTime = Time.time;
     //     playerHealthEnd = Mathf.Clamp(playerHp, 0f, 100f);
-    //     grandmaHealthEnd = Mathf.Clamp(grandmaHp, 0f, 100f);
     //     priorityItemsSaved = Mathf.Clamp(savedItems, 0, totalPriorityItems);
 
     //     float timeFindGrandma = (grandmaFound ? grandmaFoundTime : gameEndTime) - floodStartTime;
@@ -69,7 +67,6 @@ public class GameManager : MonoBehaviour
     //             timeFindGrandma,
     //             timeFinishGame,
     //             playerHealthEnd,
-    //             grandmaHealthEnd,
     //             priorityItemsSaved,
     //             totalPriorityItems
     //         ));
@@ -118,7 +115,6 @@ public class GameManager : MonoBehaviour
                 timeFindGrandma,
                 timeFinishGame,
                 finalHP,
-                100f, // Health Nenek (Default 100)
                 totalSaved,
                 totalPriorityItems
             ));
